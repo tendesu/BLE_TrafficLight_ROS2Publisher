@@ -58,7 +58,7 @@ class BLEutms_Display(Node):
         box_mid =  ["⬜️⬛️⬛️⬛️⬜️" for _ in range(3)]
         box_bot =  ["⬜️⬛️⬛️⬛️⬜️" for _ in range(3)]
         box_end =   "⬜️⬜️⬜️⬜️⬜️"
-        time_line = f"|time:{time_left:>2}|"
+        time_line = f" |time:{time_left:>2}|"
 
         if color_code == 1:
             #red
