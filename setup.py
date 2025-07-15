@@ -24,6 +24,7 @@ setup(
         'console_scripts': [
             'BLEutms_sub = BLEutms.BLEutms_sub:main',
             'BLEutms = BLEutms.BLEutms:main',
+            'BLEutms_display = BLEutms.BLEutms_display:main'
         ],
     },
 )

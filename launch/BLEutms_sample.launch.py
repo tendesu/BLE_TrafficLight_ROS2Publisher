@@ -14,10 +14,18 @@ def generate_launch_description():
             output = 'screen'
             )
     
+    BLEutms_display = launch_ros.actions.Node(
+            package = 'BLEutms',
+            executable = 'BLEutms_display',
+            output = 'screen'
+            )
+    
     BLEutms = launch_ros.actions.Node(
             package = 'BLEutms',
             executable = 'BLEutms',
+            output = 'screen'
             )
     
 
-    return launch.LaunchDescription([BLEutms_sub, BLEutms])
+    return launch.LaunchDescription([BLEutms, BLEutms_sub])
+    #return launch.LaunchDescription([BLEutms, BLEutms_display])
