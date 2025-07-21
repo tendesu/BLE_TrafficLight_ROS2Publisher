@@ -22,15 +22,15 @@ class BLEutms_Display(Node):
 
     def cb_id(self, msg):
         self.latest_id = msg.data
-        self.display()
+        self.display(0)
 
     def cb_location(self, msg):
         self.latest_location = list(msg.data)
-        self.display()
+        self.display(1)
 
     def cb_status(self, msg):
         self.latest_status = list(msg.data)
-        self.display()
+        self.display(2)
 
 
     # 絵文字使えない用
@@ -79,8 +79,16 @@ class BLEutms_Display(Node):
 
         return [box_top] + box_mid + [box_end] + box_bot + [box_end, time_line]
 
-    def display(self):
+    def display(self, update_type=None):
+
         self.get_logger().info("=== Signal Display ===")
+
+        if update_type == 0:
+            self.get_logger().info("Update ID")
+        elif update_type == 1:
+            self.get_logger().info("Update location")
+        elif update_type == 2:
+            self.get_logger().info("Update color")
 
         signals_ascii = []
 

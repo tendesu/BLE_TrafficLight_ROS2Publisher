@@ -8,7 +8,8 @@
     - 信号機ID(UTMS_PICS001)
     - 緯度経度
     - 信号機の色、残り時間
-
+    - [テスト動画(YouTube)](https://youtu.be/ce-LPqhP7Pc)
+    - <img src="https://github.com/user-attachments/assets/6ffe2068-09e1-4b56-9493-f2d0ba5e5110" width="320">
 
 ## ノード
 
@@ -16,23 +17,6 @@
 信号機のBLEをスキャン、解析、パブリッシュを行うメインノード
 
 #### パブリッシュするトピック
-- `/BLEutms_ID` (std_msgs/String)
-    - 信号機のID
-    - 出力例
-        ```
-        data: UTMS_PICS0001
-        ``` 
-
-- `/BLEutms_location` (std_msgs/Float64MultiArray)
-    - 緯度経度を出力
-    - [緯度, 経度] の順の配列
-    - 出力例
-        ```
-        data: 
-        - 35.619713
-        - 140.106892
-        ```
-
 - `/BLEutms_status` (std_msgs/UInt8MultiArray)
     - 信号機の状態を数値で配信
     - BLEで受信した生のバイトを10進数に変換したの5つの要素の配列
@@ -87,7 +71,24 @@
         - 0
         ```
 
-#### デバッグ用サブスクライブ
+- `/BLEutms_ID` (std_msgs/String)
+    - 信号機のID
+    - 出力例
+        ```
+        data: UTMS_PICS0001
+        ``` 
+
+- `/BLEutms_location` (std_msgs/Float64MultiArray)
+    - 緯度経度を出力
+    - [緯度, 経度] の順の配列
+    - 出力例
+        ```
+        data: 
+        - 35.619713
+        - 140.106892
+        ```
+
+#### デバッグ用
 - `/BLEutms_debug`
     - BLE対応の信号機がない場合のデバッグ用でサブスクライブ
     - `,`で区切られたBLEで取得できるものと同じ24バイトのデータを配信することで信号機がなくてもノードを実行できる
@@ -99,6 +100,9 @@
 
 ### BLEutms_sub
 上記のトピックをすべてサブスクライブし、ログに出力
+
+### BLEutms_display
+`/BLEutms_status` `/BLEutms_ID` `/BLEutms_time` `/BLEutms_ID` `/BLEutms_location` をサブスクライブし、AAを用いて表示
 
 ## テスト環境
 - Ubuntu 22.04 LTS

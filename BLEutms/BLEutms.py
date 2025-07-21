@@ -24,34 +24,32 @@ class BLEutms(Node):
 
         self.sub_debug = self.create_subscription(String, '/BLEutms_debug', self.debug_callback, 10)
 
-        # スキャン用
         self.previous_data = {}
-        self.loop = asyncio.get_event_loop()
-        self.timer = self.create_timer(SCAN_INTERVAL, self.scan_ble)
+        self.scanner = BleakScanner(detection_callback=self.detection_callback)
 
 
-    def scan_ble(self):
-        self.loop.create_task(self._scan())
+    def detection_callback(self, device, advertisement_data):
+        mdata = advertisement_data.manufacturer_data
+        if MANUFACTURER_ID not in mdata:
+            return
+        data_bytes = mdata[MANUFACTURER_ID]
+
+        if len(data_bytes) != 24:
+            return
+
+        address = device.address
+        data_hex = ' '.join(f'{b:02X}' for b in data_bytes)
+        if self.previous_data.get(address) == data_hex:
+            return
+        self.previous_data[address] = data_hex
+
+        self.handle_ble_data(data_bytes)
 
 
-    async def _scan(self):
-        devices = await BleakScanner.discover(timeout=1.0)
-        for d in devices:
-            mdata = d.metadata.get("manufacturer_data", {})
-            if MANUFACTURER_ID not in mdata:
-                continue
-
-            data_bytes = mdata[MANUFACTURER_ID]     #データ長確認
-            if len(data_bytes) != 24:
-                continue
-
-            address = d.address                 #データ重複確認
-            data_hex = ' '.join(f'{b:02X}' for b in data_bytes)
-            if self.previous_data.get(address) == data_hex:
-                continue
-            self.previous_data[address] = data_hex
-
-            self.handle_ble_data(data_bytes)
+    async def BLEscan(self):
+        await self.scanner.start()
+        await asyncio.sleep(1.0)
+        await self.scanner.stop()
 
 
     def debug_callback(self, msg):
@@ -59,18 +57,14 @@ class BLEutms(Node):
             hex_list = msg.data.strip().split(',')
             data_bytes = bytes(int(h, 16) for h in hex_list if h)
 
-            if len(data_bytes) != 24:           #データ長確認
-                self.get_logger().warn(f"broken data: {msg.data.strip()}")
+            if len(data_bytes) != 24:
+                self.get_logger().warn(f"broken debug data: {msg.data.strip()}")
                 return
 
             self.handle_ble_data(data_bytes)
 
         except Exception as e:
             self.get_logger().error(f"debug error: {e}")
-
-
-
-
 
 
     def handle_ble_data(self, data_bytes):
@@ -85,17 +79,12 @@ class BLEutms(Node):
         else:
             self.get_logger().warn(f"mode error: {mode:02X}")
 
-
-
-
     def publish_id(self, id_bytes):
         try:
             id_str = ''.join(chr(b) if 32 <= b <= 126 else '.' for b in id_bytes)
             self.pub_id.publish(String(data=id_str))
         except Exception as e:
             self.get_logger().warn(f"IDpub error: {e}")
-
-
 
     def publish_location(self, loc_bytes):
         try:
@@ -112,8 +101,6 @@ class BLEutms(Node):
 
         except Exception as e:
             self.get_logger().warn(f"loca pub error: {e}")
-
-
 
     def publish_color_time(self, color_data):
         try:
@@ -146,18 +133,24 @@ class BLEutms(Node):
 
 
 
-
-
 def main(args=None):
     rclpy.init(args=args)
     node = BLEutms()
+
+    async def spin_and_scan():
+        try:
+            while rclpy.ok():
+                rclpy.spin_once(node, timeout_sec=0.1)
+                await node.BLEscan()
+                await asyncio.sleep(SCAN_INTERVAL)
+        finally:
+            node.destroy_node()
+            rclpy.shutdown()
+
     try:
-        rclpy.spin(node)
+        asyncio.run(spin_and_scan())
     except KeyboardInterrupt:
         pass
-    finally:
-        node.destroy_node()
-        rclpy.shutdown()
 
 
 if __name__ == '__main__':
