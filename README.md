@@ -10,6 +10,7 @@
     - 信号機の色、残り時間
     - [テスト動画(YouTube)](https://youtu.be/ce-LPqhP7Pc)
     - <img src="https://github.com/user-attachments/assets/6ffe2068-09e1-4b56-9493-f2d0ba5e5110" width="320">
+    ![demo img](demo.png)
 
 ## ノード
 
