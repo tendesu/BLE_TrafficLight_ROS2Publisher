@@ -87,8 +87,16 @@
         - 35.619713
         - 140.106892
         ```
+   
+### BLEutms_sub
+上記のトピックをすべてサブスクライブし、ログに出力
 
-#### デバッグ用
+### BLEutms_display
+`/BLEutms_status` `/BLEutms_ID` `/BLEutms_time` `/BLEutms_ID` `/BLEutms_location` をサブスクライブし、AAを用いて表示
+
+
+
+### デバッグ用
 - `/BLEutms_debug`
     - BLE対応の信号機がない場合のデバッグ用でサブスクライブ
     - `,`で区切られたBLEで取得できるものと同じ24バイトのデータを配信することで信号機がなくてもノードを実行できる
@@ -96,13 +104,8 @@
         ```
         ros2 topic pub /BLEutms_debug std_msgs/String "data: '58,01,00,E4,00,00,00,B8,A6,2F,55,54,4D,53,5F,50,49,43,53,30,30,30,31,00'"
         ```
-    
 
-### BLEutms_sub
-上記のトピックをすべてサブスクライブし、ログに出力
 
-### BLEutms_display
-`/BLEutms_status` `/BLEutms_ID` `/BLEutms_time` `/BLEutms_ID` `/BLEutms_location` をサブスクライブし、AAを用いて表示
 
 ## テスト環境
 - Ubuntu 22.04 LTS
